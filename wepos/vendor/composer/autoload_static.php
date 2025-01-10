@@ -4,11 +4,12 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit0b6b9ed879ca3290e03e65c46a609095
+class ComposerStaticInit3cfedc367f63338ab7ea328c04075024
 {
     public static $prefixLengthsPsr4 = array (
         'W' => 
         array (
+            'WeDevs\\WePOS\\Dependencies\\' => 26,
             'WeDevs\\WePOS\\' => 13,
         ),
         'A' => 
@@ -18,6 +19,10 @@ class ComposerStaticInit0b6b9ed879ca3290e03e65c46a609095
     );
 
     public static $prefixDirsPsr4 = array (
+        'WeDevs\\WePOS\\Dependencies\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/dependencies',
+        ),
         'WeDevs\\WePOS\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes',
@@ -29,40 +34,15 @@ class ComposerStaticInit0b6b9ed879ca3290e03e65c46a609095
     );
 
     public static $classMap = array (
-        'Appsero\\Client' => __DIR__ . '/..' . '/appsero/client/src/Client.php',
-        'Appsero\\Insights' => __DIR__ . '/..' . '/appsero/client/src/Insights.php',
-        'Appsero\\License' => __DIR__ . '/..' . '/appsero/client/src/License.php',
-        'Appsero\\Updater' => __DIR__ . '/..' . '/appsero/client/src/Updater.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'WeDevs\\WePOS\\Admin\\Admin' => __DIR__ . '/../..' . '/includes/Admin/Admin.php',
-        'WeDevs\\WePOS\\Admin\\Discounts' => __DIR__ . '/../..' . '/includes/Admin/Discounts.php',
-        'WeDevs\\WePOS\\Admin\\LimitedTimePromotion' => __DIR__ . '/../..' . '/includes/Admin/LimitedTimePromotion.php',
-        'WeDevs\\WePOS\\Admin\\Products' => __DIR__ . '/../..' . '/includes/Admin/Products.php',
-        'WeDevs\\WePOS\\Admin\\RemotePromotion' => __DIR__ . '/../..' . '/includes/Admin/RemotePromotion.php',
-        'WeDevs\\WePOS\\Admin\\Settings' => __DIR__ . '/../..' . '/includes/Admin/Settings.php',
-        'WeDevs\\WePOS\\Admin\\Updates' => __DIR__ . '/../..' . '/includes/Admin/Updates.php',
-        'WeDevs\\WePOS\\Assets' => __DIR__ . '/../..' . '/includes/Assets.php',
-        'WeDevs\\WePOS\\Common' => __DIR__ . '/../..' . '/includes/Common.php',
-        'WeDevs\\WePOS\\Dokan' => __DIR__ . '/../..' . '/includes/Dokan.php',
-        'WeDevs\\WePOS\\Frontend' => __DIR__ . '/../..' . '/includes/Frontend.php',
-        'WeDevs\\WePOS\\Gateways\\Cash' => __DIR__ . '/../..' . '/includes/Gateways/Cash.php',
-        'WeDevs\\WePOS\\Gateways\\Manager' => __DIR__ . '/../..' . '/includes/Gateways/Manager.php',
-        'WeDevs\\WePOS\\Installer' => __DIR__ . '/../..' . '/includes/Installer.php',
-        'WeDevs\\WePOS\\REST\\CouponController' => __DIR__ . '/../..' . '/includes/REST/CouponController.php',
-        'WeDevs\\WePOS\\REST\\CustomerController' => __DIR__ . '/../..' . '/includes/REST/CustomerController.php',
-        'WeDevs\\WePOS\\REST\\Manager' => __DIR__ . '/../..' . '/includes/REST/Manager.php',
-        'WeDevs\\WePOS\\REST\\PaymentController' => __DIR__ . '/../..' . '/includes/REST/PaymentController.php',
-        'WeDevs\\WePOS\\REST\\ProductController' => __DIR__ . '/../..' . '/includes/REST/ProductController.php',
-        'WeDevs\\WePOS\\REST\\SettingController' => __DIR__ . '/../..' . '/includes/REST/SettingController.php',
-        'WeDevs\\WePOS\\REST\\TaxController' => __DIR__ . '/../..' . '/includes/REST/TaxController.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit0b6b9ed879ca3290e03e65c46a609095::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit0b6b9ed879ca3290e03e65c46a609095::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit0b6b9ed879ca3290e03e65c46a609095::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit3cfedc367f63338ab7ea328c04075024::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit3cfedc367f63338ab7ea328c04075024::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit3cfedc367f63338ab7ea328c04075024::$classMap;
 
         }, null, ClassLoader::class);
     }

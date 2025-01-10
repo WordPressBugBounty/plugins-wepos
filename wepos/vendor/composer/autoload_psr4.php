@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'WeDevs\\WePOS\\Dependencies\\' => array($baseDir . '/dependencies'),
     'WeDevs\\WePOS\\' => array($baseDir . '/includes'),
     'Appsero\\' => array($vendorDir . '/appsero/client/src'),
 );
