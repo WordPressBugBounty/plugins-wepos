@@ -7,27 +7,27 @@ namespace Composer\Autoload;
 class ComposerStaticInitc3ca10c4e0a44c8cc8ec5c401c94cbf1
 {
     public static $prefixLengthsPsr4 = array (
-        'W' => 
+        'W' =>
         array (
             'WeDevs\\WePOS\\Dependencies\\' => 26,
             'WeDevs\\WePOS\\' => 13,
         ),
-        'A' => 
+        'A' =>
         array (
             'Appsero\\' => 8,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'WeDevs\\WePOS\\Dependencies\\' => 
+        'WeDevs\\WePOS\\Dependencies\\' =>
         array (
             0 => __DIR__ . '/../..' . '/dependencies',
         ),
-        'WeDevs\\WePOS\\' => 
+        'WeDevs\\WePOS\\' =>
         array (
             0 => __DIR__ . '/../..' . '/includes',
         ),
-        'Appsero\\' => 
+        'Appsero\\' =>
         array (
             0 => __DIR__ . '/..' . '/appsero/client/src',
         ),

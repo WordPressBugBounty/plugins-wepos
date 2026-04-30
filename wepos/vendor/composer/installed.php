@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'wedevs/wepos',
-        'pretty_version' => 'v1.3.3',
-        'version' => '1.3.3.0',
-        'reference' => '35915f55856d55fe853f73e56530492d4035f10d',
+        'pretty_version' => 'v2.0.0',
+        'version' => '2.0.0.0',
+        'reference' => '88dbb507e5b826061b9607d1a6972662303c2bc2',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -20,9 +20,9 @@
             'dev_requirement' => false,
         ),
         'wedevs/wepos' => array(
-            'pretty_version' => 'v1.3.3',
-            'version' => '1.3.3.0',
-            'reference' => '35915f55856d55fe853f73e56530492d4035f10d',
+            'pretty_version' => 'v2.0.0',
+            'version' => '2.0.0.0',
+            'reference' => '88dbb507e5b826061b9607d1a6972662303c2bc2',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
