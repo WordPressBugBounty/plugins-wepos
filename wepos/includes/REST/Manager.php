@@ -38,6 +38,7 @@ class Manager {
         add_filter( 'woocommerce_rest_prepare_product_cat', [ $this, 'category_response' ], 10, 3 );
         add_filter( 'woocommerce_rest_prepare_tax', [ $this, 'tax_response' ], 10, 3 );
         add_filter( 'woocommerce_rest_pre_insert_shop_order_object', [ $this, 'validate_item_stock_before_order' ], 10, 3 );
+        add_filter( 'woocommerce_rest_pre_insert_shop_order_object', [ $this, 'convert_inclusive_line_totals' ], 20, 3 );
     }
 
     /**
@@ -157,14 +158,16 @@ class Manager {
      * @return void
      */
     public function validate_item_stock_before_order( $order, $request, $creating ) {
-        if ( ! $creating ) {
-            return $order;
-        }
-
         $items = $order->get_items();
 
         foreach ( $items as $item ) {
-            $product              = $item->get_product();
+            $product = $item->get_product();
+
+            // Custom/misc lines have no product and no stock to validate.
+            if ( ! $product ) {
+                continue;
+            }
+
             $is_manage_stock      = $product->get_manage_stock();
             $is_backorder_allowed = $product->get_backorders();
 
@@ -172,12 +175,114 @@ class Manager {
                 return $order;
             }
 
-            $stock_quantity = $product->get_stock_quantity();
+            // Stock this order already took (held / updated orders) is still available to it.
+            $stock_quantity = $product->get_stock_quantity() + (int) $item->get_meta( '_reduced_stock' );
             $order_quantity = $item->get_quantity();
 
             if ( $order_quantity > $stock_quantity ) {
                 throw new \WC_REST_Exception( 'woocommerce_rest_invalid_product_quantity', sprintf( __( 'The item %s already out of stock. Please remove this from cart', 'wepos' ), $product->get_name() ), 400 );
             }
+        }
+
+        return $order;
+    }
+
+    /**
+     * Net out bundled tax from POS line item totals when prices include tax.
+     *
+     * WC order line totals are always tax-exclusive, but the POS frontend
+     * posts line totals in entry mode — the raw (gross) product price when the
+     * store enters prices inclusive of tax. Without this conversion WC adds
+     * tax on top of the gross amount and the order is taxed twice.
+     *
+     * Only payloads that explicitly post line totals are converted: the legacy
+     * Vue frontend omits `total`/`subtotal`, letting WC derive the correct net
+     * price itself, and must not be netted a second time.
+     *
+     * @since WEPOS_LITE_SINCE
+     *
+     * @param \WC_Order        $order    The order being saved.
+     * @param \WP_REST_Request $request  Request data.
+     * @param bool             $creating True when creating, false when updating.
+     *
+     * @return \WC_Order
+     */
+    public function convert_inclusive_line_totals( $order, $request, $creating ) {
+        if ( empty( $request['line_items'] ) || ! wc_tax_enabled() || ! wc_prices_include_tax() ) {
+            return $order;
+        }
+
+        $is_pos_order = false;
+
+        foreach ( (array) ( $request['meta_data'] ?? [] ) as $meta ) {
+            $key   = is_array( $meta ) ? ( $meta['key'] ?? '' ) : ( $meta->key ?? '' );
+            $value = is_array( $meta ) ? ( $meta['value'] ?? '' ) : ( $meta->value ?? '' );
+
+            if ( '_wepos_is_pos_order' === $key && $value ) {
+                $is_pos_order = true;
+                break;
+            }
+        }
+
+        if ( ! $is_pos_order ) {
+            return $order;
+        }
+
+        // Gross totals are only posted explicitly; payloads without them (legacy
+        // Vue frontend) already carry WC-derived net totals.
+        $posts_gross_totals = false;
+        $posted_ids         = [];
+        foreach ( (array) $request['line_items'] as $posted_item ) {
+            if ( is_array( $posted_item ) && isset( $posted_item['total'] ) ) {
+                $posts_gross_totals = true;
+
+                if ( ! empty( $posted_item['id'] ) ) {
+                    $posted_ids[] = absint( $posted_item['id'] );
+                }
+            }
+        }
+
+        if ( ! $posts_gross_totals ) {
+            return $order;
+        }
+
+        foreach ( $order->get_items() as $item ) {
+            // Only net lines posted in this request (by id, or new unsaved lines);
+            // untouched lines of a partial update already hold net totals.
+            if ( $item->get_id() && ! in_array( $item->get_id(), $posted_ids, true ) ) {
+                continue;
+            }
+
+            $product   = $item->get_product();
+            $tax_class = $item->get_tax_class();
+
+            if ( $product ) {
+                if ( ! $product->is_taxable() ) {
+                    continue;
+                }
+            } else {
+                // Custom/misc line — tax config travels in _wepos_pos_data meta.
+                $pos_data = json_decode( (string) $item->get_meta( '_wepos_pos_data' ), true );
+
+                if ( ! is_array( $pos_data ) || 'taxable' !== ( $pos_data['tax_status'] ?? 'taxable' ) ) {
+                    continue;
+                }
+
+                $tax_class = $pos_data['tax_class'] ?? $tax_class;
+            }
+
+            // Prices entered inclusive of tax are defined against base rates.
+            $rates = \WC_Tax::get_base_tax_rates( $tax_class );
+
+            if ( empty( $rates ) ) {
+                continue;
+            }
+
+            $total_tax    = array_sum( \WC_Tax::calc_inclusive_tax( (float) $item->get_total(), $rates ) );
+            $subtotal_tax = array_sum( \WC_Tax::calc_inclusive_tax( (float) $item->get_subtotal(), $rates ) );
+
+            $item->set_total( (float) $item->get_total() - $total_tax );
+            $item->set_subtotal( (float) $item->get_subtotal() - $subtotal_tax );
         }
 
         return $order;
